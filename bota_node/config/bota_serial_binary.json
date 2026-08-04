@@ -1,0 +1,26 @@
+{
+    "driver_config": {
+        "product_name": "BFT-MN3S-USB-ML",
+        "serial_number": "SN001550",
+        "communication_interface_name": "Bota_Binary",
+        "communication_interface_params": {
+            "com_port": "/dev/ttyACM0",
+            "baudrate": 2000000
+        },
+        "sensor_operation_params": {
+            "app_mode": 1,
+            "app_submode": 7,
+            "wrench_offset": {
+                "fx": 0.0,
+                "fy": 0.0,
+                "fz": 0.0,
+                "tx": 0.0,
+                "ty": 0.0,
+                "tz": 0.0
+            }
+        },
+        "driver_operation_params": {
+            "runtime_verbosity": true
+        }
+    }
+}

@@ -1,0 +1,14 @@
+services:
+  bota_node:
+    image: bota_node:humble
+    build:
+      context: .
+      dockerfile: Dockerfile
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    volumes:
+      - ./:/workspace
+    environment:
+      - UID=${HOST_UID}
+      - ROS_DOMAIN_ID
+    command: tail -f /dev/null
