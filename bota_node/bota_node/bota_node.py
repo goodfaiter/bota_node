@@ -120,21 +120,21 @@ class BotaSensorNode(Node):
         self.temperature_pub.publish(temp_msg)
 
         # Status (handle both enum and raw integer types)
-        status = frame.status
-        if isinstance(status, enum.Enum):
-            status_name = status.name
-            status_value = status.value
-        else:
-            status_name = str(status)
-            status_value = int(status)
+        # status = frame.status
+        # if isinstance(status, enum.Enum):
+        #     status_name = status.name
+        #     status_value = status.value
+        # else:
+        #     status_name = str(status)
+        #     status_value = int(status)
 
-        status_int_msg = UInt32()
-        status_int_msg.data = status_value
-        self.status_int_pub.publish(status_int_msg)
+        # status_int_msg = UInt32()
+        # status_int_msg.data = status_value
+        # self.status_int_pub.publish(status_int_msg)
 
-        status_string_msg = String()
-        status_string_msg.data = status_name
-        self.status_string_pub.publish(status_string_msg)
+        # status_string_msg = String()
+        # status_string_msg.data = status_name
+        # self.status_string_pub.publish(status_string_msg)
 
     def destroy_node(self):
         self.get_logger().info("Shutting down Bota driver...")
