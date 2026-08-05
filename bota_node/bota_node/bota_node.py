@@ -35,10 +35,9 @@ class BotaSensorNode(Node):
         self.get_logger().info(f"Publish rate: {publish_rate} Hz")
         self.get_logger().info(f"Frame ID: {self.frame_id}")
 
-        # Publishers for every available field
-        self.wrench_pub = self.create_publisher(WrenchStamped, "bota/wrench", 10)
-        self.imu_pub = self.create_publisher(Imu, "bota/imu", 10)
-        self.temperature_pub = self.create_publisher(Temperature, "bota/temperature", 10)
+        self.wrench_pub = self.create_publisher(WrenchStamped, "bota/wrench_N_and_Nm", 10)
+        self.imu_pub = self.create_publisher(Imu, "bota/imu_mps2_and_radps", 10)
+        self.temperature_pub = self.create_publisher(Temperature, "bota/temperature_C", 10)
         self.status_int_pub = self.create_publisher(UInt32, "bota/status_int", 10)
         self.status_string_pub = self.create_publisher(String, "bota/status_string", 10)
 
