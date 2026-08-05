@@ -5,10 +5,12 @@ services:
       context: .
       dockerfile: Dockerfile
     devices:
-      - /dev/ttyACM0:/dev/ttyACM0
+      - /dev/ttyACM0
+    privileged: true
     volumes:
       - ./:/workspace
     environment:
       - UID=${HOST_UID}
       - ROS_DOMAIN_ID
-    command: tail -f /dev/null
+    # command: tail -f /dev/null
+    command: su - ros --whitelist-environment=ROS_DOMAIN_ID /run.sh
