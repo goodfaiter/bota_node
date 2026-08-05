@@ -7,7 +7,8 @@ ROS2 node for data collection from a Bota Systems force/torque sensor using the 
 - `/bota/wrench` (`geometry_msgs/WrenchStamped`) – force/torque measurements
 - `/bota/imu` (`sensor_msgs/Imu`) – acceleration and angular rate
 - `/bota/temperature` (`sensor_msgs/Temperature`) – sensor temperature
-- `/bota/status` (`std_msgs/UInt32`) – driver frame status
+- `/bota/status_int` (`std_msgs/UInt32`) – driver frame status as integer
+- `/bota/status_string` (`std_msgs/String`) – driver frame status as string
 
 ## Parameters
 

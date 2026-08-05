@@ -6,9 +6,10 @@ from ament_index_python.packages import get_package_share_directory
 
 from geometry_msgs.msg import WrenchStamped
 from sensor_msgs.msg import Imu, Temperature
-from std_msgs.msg import UInt32
+from std_msgs.msg import UInt32, String
 
 import bota_driver
+import enum
 import os
 
 
@@ -38,7 +39,8 @@ class BotaSensorNode(Node):
         self.wrench_pub = self.create_publisher(WrenchStamped, "bota/wrench", 10)
         self.imu_pub = self.create_publisher(Imu, "bota/imu", 10)
         self.temperature_pub = self.create_publisher(Temperature, "bota/temperature", 10)
-        self.status_pub = self.create_publisher(UInt32, "bota/status", 10)
+        self.status_int_pub = self.create_publisher(UInt32, "bota/status_int", 10)
+        self.status_string_pub = self.create_publisher(String, "bota/status_string", 10)
 
         # Create and start driver
         self.driver = bota_driver.BotaDriver(config_path)
@@ -118,10 +120,22 @@ class BotaSensorNode(Node):
         temp_msg.variance = 0.0
         self.temperature_pub.publish(temp_msg)
 
-        # Status
-        status_msg = UInt32()
-        status_msg.data = int(frame.status)
-        self.status_pub.publish(status_msg)
+        # Status (handle both enum and raw integer types)
+        status = frame.status
+        if isinstance(status, enum.Enum):
+            status_name = status.name
+            status_value = status.value
+        else:
+            status_name = str(status)
+            status_value = int(status)
+
+        status_int_msg = UInt32()
+        status_int_msg.data = status_value
+        self.status_int_pub.publish(status_int_msg)
+
+        status_string_msg = String()
+        status_string_msg.data = status_name
+        self.status_string_pub.publish(status_string_msg)
 
     def destroy_node(self):
         self.get_logger().info("Shutting down Bota driver...")
