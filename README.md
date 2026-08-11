@@ -29,33 +29,3 @@ Inside the container the node is launched with:
 ```bash
 ros2 run bota_node bota_node
 ```
-
-## USB latency setup
-
-For high frequency communication, lower the USB serial latency timer. This increases CPU usage.
-
-Create a systemd service, adapting `ttyACM0` to your actual serial device:
-
-```bash
-sudo nano /etc/systemd/system/set-usb-latency.service
-```
-
-```ini
-[Unit]
-Description=Set USB serial latency timer
-After=syslog.target
-
-[Service]
-Type=oneshot
-ExecStart=/bin/bash -c 'echo 1 > /sys/bus/usb-serial/devices/ttyACM0/latency_timer'
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Then enable it:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable set-usb-latency.service
-```

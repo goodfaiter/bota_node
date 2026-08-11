@@ -13,3 +13,11 @@ source /opt/ros/${ROS_DISTRO}/setup.bash
 source /colcon_ws/install/setup.bash || true
 
 exec "$@"
+
+# # Set fixed process priority / niceness.
+# # The container runs privileged, so CAP_SYS_NICE is available.
+# NICE_LEVEL=-20
+# RT_PRIORITY=90
+
+# echo "Starting with SCHED_FIFO priority $RT_PRIORITY and nice level $NICE_LEVEL"
+# exec chrt -f "$RT_PRIORITY" nice -n "$NICE_LEVEL" "$@"
