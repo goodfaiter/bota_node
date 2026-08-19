@@ -7,10 +7,12 @@ from ament_index_python.packages import get_package_share_directory
 from geometry_msgs.msg import WrenchStamped
 from sensor_msgs.msg import Imu, Temperature
 from std_msgs.msg import UInt32, String
+from std_srvs.srv import Trigger
 
 import bota_driver
 import enum
 import os
+import threading
 
 
 class BotaSensorNode(Node):
@@ -28,12 +30,14 @@ class BotaSensorNode(Node):
         self.declare_parameter("publish_rate", 50.0)
         self.declare_parameter("frame_id", "bota_sensor")
         self.declare_parameter("tare_on_startup", True)
+        self.declare_parameter("reset_service_name", "/bota_node/reset")
 
         config_path = self.get_parameter("config_path").get_parameter_value().string_value
         read_rate = self.get_parameter("read_rate").get_parameter_value().double_value
         publish_rate = self.get_parameter("publish_rate").get_parameter_value().double_value
         self.frame_id = self.get_parameter("frame_id").get_parameter_value().string_value
         tare_on_startup = self.get_parameter("tare_on_startup").get_parameter_value().bool_value
+        reset_service_name = self.get_parameter("reset_service_name").get_parameter_value().string_value
 
         self.get_logger().info(f"Using Bota driver config: {config_path}")
         self.get_logger().info(f"Read rate: {read_rate} Hz")
@@ -54,6 +58,9 @@ class BotaSensorNode(Node):
             if not self.driver.tare():
                 raise RuntimeError("Failed to tare Bota sensor")
 
+        self.reset_service = self.create_service(Trigger, reset_service_name, self._reset_service_callback)
+        self.get_logger().info(f"Reset service advertised on {reset_service_name}")
+
         self.get_logger().info("Activating Bota driver...")
         if not self.driver.activate():
             raise RuntimeError("Failed to activate Bota driver")
@@ -73,6 +80,24 @@ class BotaSensorNode(Node):
             self.publish_frame,
             clock=rclpy.clock.Clock(clock_type=rclpy.clock.ClockType.STEADY_TIME),
         )
+
+    def _reset_service_callback(self, request, response):
+        """ROS service callback for the reset service.
+
+        Returns success immediately, then shuts down the node so Docker can restart it.
+        """
+        response.success = True
+        response.message = "Resetting node..."
+        self.get_logger().info("Reset requested, shutting down node...")
+        # Shutdown from a separate thread so the service response can be sent first.
+        threading.Thread(target=self._request_shutdown, daemon=True).start()
+        return response
+
+    def _request_shutdown(self):
+        """Trigger rclpy shutdown from outside the service callback thread."""
+        # Give the service response a moment to be sent.
+        threading.Event().wait(0.1)
+        rclpy.shutdown()
 
     def read_sensor(self):
         self._frame = self.driver.read_frame()
